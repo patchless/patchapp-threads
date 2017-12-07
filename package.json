@@ -1,0 +1,25 @@
+{
+  "name": "patchthreads",
+  "description": "",
+  "version": "1.0.0",
+  "homepage": "https://github.com/dominictarr/patchthreads",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dominictarr/patchthreads.git"
+  },
+  "dependencies": {
+    "hyperscript": "^2.0.2",
+    "obv": "0.0.1",
+    "pull-stream": "^3.6.1",
+    "ssb-marked": "^0.7.2",
+    "ssb-ref": "^2.7.1",
+    "ssb-sort": "^1.0.0",
+    "ssb-thread": "^1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "set -e; for t in test/*.js; do node $t; done"
+  },
+  "author": "'Dominic Tarr' <dominic.tarr@gmail.com> (dominictarr.com)",
+  "license": "MIT"
+}
