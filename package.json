@@ -1,11 +1,11 @@
 {
-  "name": "patchthreads",
+  "name": "patchapp-threads",
   "description": "",
   "version": "1.1.0",
-  "homepage": "https://github.com/dominictarr/patchthreads",
+  "homepage": "https://github.com/dominictarr/patchapp-threads",
   "repository": {
     "type": "git",
-    "url": "git://github.com/dominictarr/patchthreads.git"
+    "url": "git://github.com/dominictarr/patchapp-threads.git"
   },
   "dependencies": {
     "hyperloadmore": "^1.1.0",
