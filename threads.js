@@ -5,7 +5,6 @@ var h = require('hyperscript')
 var Obv = require('obv')
 var ssbThread = require('ssb-thread')
 var markdown = require('ssb-marked')
-var base64 = require('base64-url')
 
 function once (cont) {
   var ended = false
@@ -124,4 +123,5 @@ exports.create = function (api) {
     }}
   }
 }
+
 
