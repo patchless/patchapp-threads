@@ -4,17 +4,14 @@ var ref = require('ssb-ref')
 var markdown = require('ssb-markdown')
 var More = require('pull-more')
 var HyperMoreStream = require('hyperloadmore/stream')
+var viewMenu = require('./junk/view-menu')
 
-//var ssbKeys = require('ssb-keys')
-//var config = require('ssb-config')
-//var path = require('path')
-//var keys = config.keys = ssbKeys.loadOrCreateSync(path.join(config.path, 'secret'))
-//
 exports.needs = {
   sbot: { createLogStream: 'first' },
   avatar: {image: 'first', name: 'first'},
   message: { layout: 'first' },
-  identity: {unbox: 'first'}
+  identity: {unbox: 'first'},
+  app: {viewMenu: 'map'},
 }
 
 exports.gives = {
@@ -28,8 +25,7 @@ exports.create = function (api) {
       view: function (src) {
         if(src !== 'private') return
 
-        var content = h('div.content')
-        var el = h('div')
+        var content = h('div.content', viewMenu(api.app.viewMenu(src)))
 
         function createStream (opts) {
           return pull(
@@ -62,6 +58,9 @@ exports.create = function (api) {
     }
   }
 }
+
+
+
 
 
 

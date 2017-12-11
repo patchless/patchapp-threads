@@ -28,7 +28,8 @@ exports.needs = {
   message: {layout: 'first'},
   identity: { unbox: 'first' },
   compose: { text: 'first' },
-  confirm: { show: 'first' }
+  confirm: { show: 'first' },
+  app: { viewMenu: 'map' }
 }
 
 exports.gives = {
@@ -37,10 +38,6 @@ exports.gives = {
 }
 
 exports.create = function (api) {
-//  function unbox (msg) {
-//    return 'string' === typeof msg.value.content ? api.identity.unbox(msg) : msg
-//  }
-//
 
   var unbox = api.identity.unbox
   var getThread = ssbThread.bind(null, api.sbot, unbox)
@@ -61,8 +58,7 @@ exports.create = function (api) {
     var content = h('div.patchthreads__content')
     var container = h('div.patchthreads__container',
       content,
-      api.compose.text(meta, {}, function (content, context, cb) {
-        console.log('content', content)
+      api.compose.text(meta, {path: id}, function (content, context, cb) {
         api.confirm.show(content, context, cb)
       })
     )
@@ -89,21 +85,7 @@ exports.create = function (api) {
       var children = container.children
       thread.forEach(function (data, i) {
         if(!rendered[data.key]) {
-          console.log(data)
-          var el = rendered[data.key] = api.message.layout(data)
-//              h('div.Message',
-//                h('a.avatar', {href: data.value.author},
-//                  api.avatar.image(data.value.author),
-//                  api.avatar.name(data.value.author)
-//                ),
-//                h('a', {href: data.key}, new Date(data.value.timestamp)),
-//                data.value.content.text ?
-//                h('div.markdown', {
-//                  innerHTML: markdown(data.value.content.text)
-//                })
-//                : null
-//              )
-          content.appendChild(el)
+          content.appendChild(rendered[data.key] = api.message.layout(data))
         }
       })
 
@@ -123,5 +105,3 @@ exports.create = function (api) {
     }}
   }
 }
-
-

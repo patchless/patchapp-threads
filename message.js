@@ -24,13 +24,13 @@ exports.create = function (api) {
           h('div.side',
             h('div.Avatar',
               h('a', {href: data.value.author},
-                api.avatar.image(data.value.author),
+                api.avatar.image(data.value.author)
               ),
               h('a', {href: data.value.author},
                 api.avatar.name(data.value.author)
-              ),
+              )
             ),
-            h('a', {href: data.key}, ago(Date.now(), data.value.timestamp)),
+            h('a', {href: data.key}, ago(Date.now(), data.value.timestamp))
           ),
           h('div.message__wrapper',
             h('div.MessageMeta', api.message.meta(data, context)),

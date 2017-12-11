@@ -10,7 +10,7 @@
   "dependencies": {
     "hyperloadmore": "^1.1.0",
     "hyperscript": "^2.0.2",
-    "nice-ago": "^1.0.0",
+    "nice-ago": "^1.0.1",
     "obv": "0.0.1",
     "pull-more": "^1.0.0",
     "pull-stream": "^3.6.1",

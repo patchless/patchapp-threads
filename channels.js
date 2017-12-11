@@ -12,22 +12,26 @@ exports.needs = {
 }
 
 exports.gives = {
-  app: {menu: true, view: true}
+  app: {view: true}, message: { meta: true },
+  compose: { context: true }
 }
 
 exports.create = function (api) {
   return {
     app: {
       view: function (src) {
-        if(src !== 'public') return
-
+        if(!/^#\w+/.test(src)) return
+        var channel = src.substring(1)
         var content = h('div.content', viewMenu(api.app.viewMenu(src)))
 
         function createStream (opts) {
           return pull(
             More(api.sbot.createLogStream, opts),
             pull.filter(function (data) {
-              return 'string' === typeof data.value.content.text
+              return (
+                data.value.content.channel == channel &&
+                'string' === typeof data.value.content.text
+              )
             }),
             pull.map(api.message.layout)
           )
@@ -45,11 +49,26 @@ exports.create = function (api) {
 
 
         return content
-      },
-      menu: function () {
-        return 'public'
+      }
+    },
+    message: {
+      meta: function (msg) {
+        var channel = msg.value.content.channel
+        if(channel)
+          return h('a', {href: '#'+channel}, '#'+channel)
+      }
+    },
+    compose: {
+      context: function (meta, context) {
+        if(meta.root) return //can't change the channel mid thread
+        return h('div.patchapp__compose-context', h('label', 'channel'), h('input', meta.channel, {oninput: function (ev) {
+          meta.channel = ev.target.value
+        }}))
+
       }
     }
   }
 }
+
+
 

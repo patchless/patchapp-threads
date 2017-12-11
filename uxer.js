@@ -7,7 +7,7 @@ var HyperMoreStream = require('hyperloadmore/stream')
 
 exports.needs = {
   sbot: { createUserStream: 'first' },
-  avatar: {image: 'first', name: 'first'}
+  message: { layout: 'first' }
 }
 
 exports.gives = {
@@ -15,24 +15,6 @@ exports.gives = {
 }
 
 exports.create = function (api) {
-  function render (data) {
-    return h('div.message', [
-      h('div.Avatar',
-        h('a', {href: data.value.author},
-          api.avatar.image(data.value.author),
-          api.avatar.name(data.value.author)
-        ),
-      ),
-      h('a', {href: data.key}, new Date(data.value.timestamp)),
-      h('div.markdown',
-        {innerHTML: markdown.block(data.value.content.text, {toUrl: function (url, image) {
-          if(!image) return url
-          if(url[0] !== '&') return url
-          return 'http://localhost:8989/blobs/get/'+url
-        }})}
-      )]
-    )
-  }
 
   return {
     app: {
@@ -40,7 +22,6 @@ exports.create = function (api) {
         if(!ref.isFeed(src)) return
 
         var content = h('div.content')
-        var el = h('div')
 
         function createStream (opts) {
           return pull(
@@ -48,7 +29,7 @@ exports.create = function (api) {
             pull.filter(function (data) {
               return 'string' === typeof data.value.content.text
             }),
-            pull.map(render)
+            pull.map(api.message.layout)
           )
         }
 
@@ -70,5 +51,8 @@ exports.create = function (api) {
     }
   }
 }
+
+
+
 
 
