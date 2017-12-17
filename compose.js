@@ -1,6 +1,9 @@
 var h = require('hyperscript')
+var isFeed = require('ssb-ref').isFeed
+
 exports.gives = {
-  app: { view: true, viewMenu: true }
+  app: { view: true, viewMenu: true },
+  avatar: { action: true }
 }
 
 exports.needs = {
@@ -11,8 +14,17 @@ exports.needs = {
 exports.create = function (api) {
   return { app: {
     view: function (path) {
-      if(path !== 'compose') return
-      var meta = {type: 'post'} //completely new message
+      var recps
+      if(!/^compose/.test(path)) return
+      if(path.length > 7 && path[7] != '/') return
+
+      var at = path.substring(8)
+      if(isFeed(at)) recps = [at]
+      else if(at == 'private') recps = []
+      else if (at == '') recps = undefined
+      else return
+
+      var meta = {type: 'post', recps: recps } //completely new message
       return api.compose.text(meta, {path: path}, function (content, context, cb) {
         api.confirm.show(content, context, cb)
       })
@@ -20,8 +32,16 @@ exports.create = function (api) {
     viewMenu: function (src) {
       if(src == 'public')
         return h('a', {href: 'compose'}, 'compose')
+      if(src == 'private')
+        return h('a', {href: 'compose/private'}, 'compose')
+      //compose to this id. maybe should use pen + their avatar ?
+      if(/^private\//.test(src) && isFeed(src.substring(8)))
+        return h('a', {href: 'compose/'+src.substring(8)}, 'compose to')
     }
-  }}
+  },
+    avatar: { action: function (id) {
+      return h('a', {href: 'compose/'+id}, 'message')
+    }}
+  }
 }
-
 
