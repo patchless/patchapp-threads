@@ -7,7 +7,7 @@ var HyperMoreStream = require('hyperloadmore/stream')
 var viewMenu = require('./junk/view-menu')
 
 exports.needs = {
-  sbot: { createLogStream: 'first' },
+  sbot: { createLogStream: 'first', createUserStream: 'first'},
   avatar: {image: 'first', name: 'first'},
   message: { layout: 'first' },
   identity: {unbox: 'first'},
@@ -15,7 +15,8 @@ exports.needs = {
 }
 
 exports.gives = {
-  app: {menu: true, view: true}
+  app: {menu: true, view: true},
+  avatar: { action: true }
 }
 
 exports.create = function (api) {
@@ -23,13 +24,20 @@ exports.create = function (api) {
   return {
     app: {
       view: function (src) {
-        if(src !== 'private') return
-
+        var id
+        if(!(
+          src == 'private' ||
+          (/^private\//.test(src) && ref.isFeed(id = src.substring(8)))
+        )) return
+        console.log('private' ,id)
         var content = h('div.content', viewMenu(api.app.viewMenu(src)))
 
         function createStream (opts) {
           return pull(
-            More(api.sbot.createLogStream, opts),
+            (id
+              ? More(api.sbot.createUserStream, opts, ['value', 'sequence'])
+              : More(api.sbot.createLogStream, opts)
+            ),
             pull.filter(function (data) {
               return data && 'string' === typeof data.value.content
             }),
@@ -40,12 +48,12 @@ exports.create = function (api) {
         }
 
         pull(
-          createStream({old: false, limit: 10}),
+          createStream({old: false, limit: 10, id: id}),
           HyperMoreStream.top(content)
         )
 
         pull(
-          createStream({reverse: true, live: false, limit: 10}),
+          createStream({reverse: true, live: false, limit: 10, id: id}),
           HyperMoreStream.bottom(content)
         )
 
@@ -55,17 +63,14 @@ exports.create = function (api) {
       menu: function () {
         return 'private'
       }
+    },
+    avatar: {
+      action: function (id) {
+        return h('a', {href: 'private/'+id}, 'private')
+      }
     }
   }
 }
-
-
-
-
-
-
-
-
 
 
 
