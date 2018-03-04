@@ -43,7 +43,6 @@ exports.create = function (api) {
   var getThread = ssbThread.bind(null, api.sbot, unbox)
 
   return {app: {view: function (id) {
-    console.log("THREAD?", id, ref.isMsg(id))
     if(!ref.isMsg(id)) return
 
     var obv = Obv()
