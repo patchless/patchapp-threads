@@ -7,7 +7,7 @@ var HyperMoreStream = require('hyperloadmore/stream')
 var viewMenu = require('./junk/view-menu')
 
 exports.needs = {
-  sbot: { createLogStream: 'first', createUserStream: 'first'},
+  sbot: { createLogStream: 'first', createUserStream: 'first', private: {read: 'first'}},
   avatar: {image: 'first', name: 'first'},
   message: { layout: 'first' },
   identity: {unbox: 'first'},
@@ -29,20 +29,24 @@ exports.create = function (api) {
           src == 'private' ||
           (/^private\//.test(src) && ref.isFeed(id = src.substring(8)))
         )) return
-        console.log('private' ,id)
         var content = h('div.content', viewMenu(api.app.viewMenu(src)))
 
         function createStream (opts) {
+          function create(opts) {
+            var lt = opts.lt
+            opts.query = [
+                {$filter: {
+                  timestamp: typeof lt === 'number'
+                    ? {$lt: lt, $gt: 0}
+                    : {$gt: 0}
+                  }
+                }
+              ]
+            return api.sbot.private.read(opts)
+          }
+
           return pull(
-            (id
-              ? More(api.sbot.createUserStream, opts, ['value', 'sequence'])
-              : More(api.sbot.createLogStream, opts)
-            ),
-            pull.filter(function (data) {
-              return data && 'string' === typeof data.value.content
-            }),
-            pull.map(api.identity.unbox),
-            pull.filter(Boolean),
+            More(create, opts, ['timestamp']),
             pull.map(api.message.layout)
           )
         }
@@ -53,10 +57,9 @@ exports.create = function (api) {
         )
 
         pull(
-          createStream({reverse: true, live: false, limit: 10, id: id}),
+          createStream({reverse: true, live: false, limit: 100, id: id}),
           HyperMoreStream.bottom(content)
         )
-
 
         return content
       },
@@ -71,7 +74,4 @@ exports.create = function (api) {
     }
   }
 }
-
-
-
 
