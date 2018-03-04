@@ -1,5 +1,6 @@
 var h = require('hyperscript')
 var isFeed = require('ssb-ref').isFeed
+var isArray = Array.isArray
 
 exports.gives = {
   app: { view: true, viewMenu: true },
@@ -26,6 +27,10 @@ exports.create = function (api) {
 
       var meta = {type: 'post', recps: recps } //completely new message
       return api.compose.text(meta, {path: path}, function (content, context, cb) {
+
+        if(content.recps && !content.recps.length)
+          return alert('private message without recipients')
+
         api.confirm.show(content, context, cb)
       })
     },
@@ -33,7 +38,7 @@ exports.create = function (api) {
       if(src == 'public')
         return h('a', {href: 'compose'}, 'compose')
       if(src == 'private')
-        return h('a', {href: 'compose/private'}, 'compose')
+        return h('a', {href: 'compose/private'}, 'compose (private)')
       //compose to this id. maybe should use pen + their avatar ?
       if(/^private\//.test(src) && isFeed(src.substring(8)))
         return h('a', {href: 'compose/'+src.substring(8)}, 'compose to')
@@ -44,4 +49,7 @@ exports.create = function (api) {
     }}
   }
 }
+
+
+
 
