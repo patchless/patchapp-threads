@@ -6,7 +6,7 @@ var HyperMoreStream = require('hyperloadmore/stream')
 var viewMenu = require('./junk/view-menu')
 
 exports.needs = {
-  sbot: { createLogStream: 'first' },
+  sbot: { query: { read: 'first' } },
   message: {layout: 'first'},
   app: {viewMenu: 'map'}
 }
@@ -17,6 +17,22 @@ exports.gives = {
 }
 
 exports.create = function (api) {
+
+  function create(opts) {
+    var lt = opts.lt
+    opts.query = [
+        {$filter: {
+          value: { content: { channel: opts.channel } },
+          //timestamp: {$lt: opts.lt},
+          //value: {author: opts.id}
+        timestamp: typeof lt === 'number'
+          ? {$lt: lt, $gt: 0}
+          : {$gt: 0}
+        }}
+      ]
+    return api.sbot.query.read(opts)
+  }
+
   return {
     app: {
       view: function (src) {
@@ -26,7 +42,7 @@ exports.create = function (api) {
 
         function createStream (opts) {
           return pull(
-            More(api.sbot.createLogStream, opts),
+            More(create, opts),
             pull.filter(function (data) {
               return (
                 data.value.content.channel == channel &&
@@ -38,12 +54,12 @@ exports.create = function (api) {
         }
 
         pull(
-          createStream({old: false, limit: 100}),
+          createStream({old: false, limit: 100, channel: channel}),
           HyperMoreStream.top(content)
         )
 
         pull(
-          createStream({reverse: true, live: false, limit: 100}),
+          createStream({reverse: true, live: false, limit: 100, channel: channel}),
           HyperMoreStream.bottom(content)
         )
 
@@ -69,6 +85,8 @@ exports.create = function (api) {
     }
   }
 }
+
+
 
 
 
