@@ -29,7 +29,6 @@ exports.create = function (api) {
           src == 'private' ||
           (/^private\//.test(src) && ref.isFeed(id = src.substring(8)))
         )) return
-        console.log('private' ,id)
         var content = h('div.content', viewMenu(api.app.viewMenu(src)))
 
         function createStream (opts) {
@@ -39,21 +38,22 @@ exports.create = function (api) {
               : More(api.sbot.createLogStream, opts)
             ),
             pull.filter(function (data) {
-              return data && 'string' === typeof data.value.content
+              return data && data.value.private
+//              return data && 'string' === typeof data.value.content
             }),
-            pull.map(api.identity.unbox),
-            pull.filter(Boolean),
+//            pull.map(api.identity.unbox),
+  //          pull.filter(Boolean),
             pull.map(api.message.layout)
           )
         }
 
         pull(
-          createStream({old: false, limit: 10, id: id}),
+          createStream({old: false, limit: 10, id: id, private: true}),
           HyperMoreStream.top(content)
         )
 
         pull(
-          createStream({reverse: true, live: false, limit: 10, id: id}),
+          createStream({reverse: true, live: false, limit: 10, id: id, private: true}),
           HyperMoreStream.bottom(content)
         )
 
@@ -71,6 +71,7 @@ exports.create = function (api) {
     }
   }
 }
+
 
 
 
