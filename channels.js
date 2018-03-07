@@ -42,7 +42,7 @@ exports.create = function (api) {
 
         function createStream (opts) {
           return pull(
-            More(create, opts),
+            More(create, opts, 'timestamp', 'lt'),
             pull.filter(function (data) {
               return (
                 data.value.content.channel == channel &&
@@ -85,6 +85,8 @@ exports.create = function (api) {
     }
   }
 }
+
+
 
 
 
