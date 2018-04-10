@@ -8,6 +8,7 @@
     "url": "git://github.com/dominictarr/patchapp-threads.git"
   },
   "dependencies": {
+    "html-escape": "^2.0.0",
     "hyperloadmore": "^1.1.0",
     "hyperscript": "^2.0.2",
     "libnested": "^1.3.1",
