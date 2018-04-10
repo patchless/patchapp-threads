@@ -1,7 +1,7 @@
 var h = require('hyperscript')
 var ref = require('ssb-ref')
 var viewMenu = require('./junk/view-menu')
-var Stream = require('./junk/stream')
+var QueryStream = require('mfr-query-stream')
 
 exports.needs = {
   sbot: { query: {read: 'first'}},
@@ -27,7 +27,7 @@ exports.create = function (api) {
           (/^private\//.test(src) && ref.isFeed(id = src.substring(8)))
         )) return
 
-        return Stream(
+        return QueryStream(
           api.sbot.query.read,
           [{$filter: {value: {private: true, author: id}}}],
           api.message.layout,
