@@ -1,7 +1,7 @@
 {
   "name": "patchapp-threads",
   "description": "",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "homepage": "https://github.com/dominictarr/patchapp-threads",
   "repository": {
     "type": "git",
@@ -30,4 +30,3 @@
   "author": "'Dominic Tarr' <dominic.tarr@gmail.com> (dominictarr.com)",
   "license": "MIT"
 }
-
