@@ -1,12 +1,10 @@
 var h = require('hyperscript')
-var pull = require('pull-stream')
 var ref = require('ssb-ref')
-var More = require('pull-more')
-var HyperMoreStream = require('hyperloadmore/stream')
 var viewMenu = require('./junk/view-menu')
+var QueryStream = require('mfr-query-stream')
 
 exports.needs = {
-  sbot: { createLogStream: 'first', createUserStream: 'first'},
+  sbot: { query: { read: 'first' }},
   message: {layout: 'first'},
   app: {viewMenu: 'map'}
 }
@@ -26,33 +24,16 @@ exports.create = function (api) {
           (/^public\//.test(src) && ref.isFeed(id = src.substring(7)))
         )) return
 
-        var content = h('div.content', viewMenu(api.app.viewMenu(src)))
-
-        function createStream (opts) {
-          return pull(
-            (id
-              ? More(api.sbot.createUserStream, opts, ['value', 'sequence'])
-              : More(api.sbot.createLogStream, opts)
-            ),
-            pull.filter(function (data) {
-              return 'string' === typeof data.value.content.text
-            }),
-            pull.map(api.message.layout)
-          )
-        }
-
-        pull(
-          createStream({old: false, limit: 100, id: id}),
-          HyperMoreStream.top(content)
+        return QueryStream(
+          api.sbot.query.read,
+          [{$filter: {value: {
+            private: {$is: 'undefined'},
+            content: {type: 'post'},
+            author: id
+          }}}],
+          api.message.layout,
+          h('div.content', viewMenu(api.app.viewMenu(src)))
         )
-
-        pull(
-          createStream({reverse: true, live: false, limit: 100, id: id}),
-          HyperMoreStream.bottom(content)
-        )
-
-
-        return content
       },
       menu: function () {
         return 'public'
@@ -65,5 +46,4 @@ exports.create = function (api) {
     }
   }
 }
-
 
