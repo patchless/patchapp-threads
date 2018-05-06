@@ -17,7 +17,7 @@
     "obv": "0.0.1",
     "pull-more": "^1.1.0",
     "pull-stream": "^3.6.1",
-    "ssb-markdown": "^3.3.0",
+    "ssb-markdown": "^3.5.0",
     "ssb-marked": "^0.7.2",
     "ssb-ref": "^2.7.1",
     "ssb-sort": "^1.0.0",
