@@ -84,7 +84,12 @@ exports.create = function (api) {
       var children = container.children
       thread.forEach(function (data, i) {
         if(!rendered[data.key]) {
-          content.appendChild(rendered[data.key] = api.message.layout(data))
+          var msg = rendered[data.key] = api.message.layout(data)
+          if(children.length <= i)
+            content.appendChild(msg)
+          else
+            content.insertBefore(msg, children[i+1])
+
         }
       })
 
