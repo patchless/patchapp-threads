@@ -21,7 +21,7 @@
     "ssb-marked": "^0.7.2",
     "ssb-ref": "^2.7.1",
     "ssb-sort": "^1.0.0",
-    "ssb-thread": "^1.1.0"
+    "ssb-thread": "^2.0.1"
   },
   "devDependencies": {},
   "scripts": {
