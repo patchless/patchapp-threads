@@ -81,15 +81,14 @@ exports.create = function (api) {
           meta.recps = [thread[0].value.author, self_id]
       }
 
-      var children = container.children
+      var children = content.children
       thread.forEach(function (data, i) {
         if(!rendered[data.key]) {
           var msg = rendered[data.key] = api.message.layout(data)
-          if(children.length <= i)
+          if(children.length && children.length <= i)
             content.appendChild(msg)
           else
             content.insertBefore(msg, children[i+1])
-
         }
       })
 
